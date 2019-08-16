@@ -63,10 +63,11 @@ class WafRateLimit:
     def _create_rate_based_rule(self):
         rule_id = self.create_rate_based_rule()
 
-        if len(self.ip_set):
-            ip_set_id = self.create_ip_set()
-            self.update_ip_set('INSERT', ip_set_id, self.ip_set)
-            self.update_rate_based_rule('INSERT', ip_set_id, rule_id)
+        if 'IPSet' in resource_properties:
+            if len(self.ip_set):
+                ip_set_id = self.create_ip_set()
+                self.update_ip_set('INSERT', ip_set_id, self.ip_set)
+                self.update_rate_based_rule('INSERT', ip_set_id, rule_id)
 
         self._add_to_web_acl(rule_id)
 
