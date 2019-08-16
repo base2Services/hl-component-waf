@@ -204,7 +204,7 @@ CloudFormation do
           Property('Action',    config['action'])
           Property('Priority',  config['priority'])
           Property('Regional',  config['regional'])
-          Property('IPSet',     generate_waf_ip_set(cr_ip_sets, ['rate_limit']))
+          Property('IPSet',     generate_waf_ip_set(cr_ip_sets, ['rate_limit'])) if defined? cr_ip_sets
         }
       end
     end

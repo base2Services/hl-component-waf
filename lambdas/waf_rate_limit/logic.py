@@ -14,7 +14,8 @@ class WafRateLimit:
         self.rate = resource_properties['Rate']
         self.action = resource_properties['Action']
         self.region = resource_properties['Region']
-        self.ip_set = resource_properties['IPSet']
+        if 'IPSet' in resource_properties:
+            self.ip_set = resource_properties['IPSet'] 
         self.negated = resource_properties['Negated']
         self.region = resource_properties['Region']
         self.regional = resource_properties.get('Regional', 'false')
@@ -23,10 +24,12 @@ class WafRateLimit:
 
         if 'EnvironmentName' in resource_properties:
             self.rule_name = f"{resource_properties['EnvironmentName']}-rate-limit"
-            self.ip_set_name = f"{resource_properties['EnvironmentName']}-rate-limit-ip-set"
+            if 'IPSet' in resource_properties:
+                self.ip_set_name = f"{resource_properties['EnvironmentName']}-rate-limit-ip-set"
         else:
             self.rule_name = resource_properties['RuleName']
-            self.ip_set_name = resource_properties['IpSetName']
+            if 'IPSet' in resource_properties:
+                self.ip_set_name = resource_properties['IpSetName']
 
         self.metric_name = self.rule_name.replace('-', '')
 
