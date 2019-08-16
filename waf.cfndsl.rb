@@ -196,7 +196,7 @@ CloudFormation do
           Type 'Custom::WAFRateLimit'
           Property('ServiceToken', FnGetAtt(config['function_name'], 'Arn'))
           Property('RuleName',  FnSub("${EnvironmentName}-#{name}"))
-          Property('IpSetName', FnSub("${EnvironmentName}-#{name}-ip-set"))
+          Property('IpSetName', FnSub("${EnvironmentName}-#{name}-ip-set")) if defined? cr_ip_sets
           Property('Region',    Ref("AWS::Region"))
           Property('WebACLId',  Ref(config['web_acl_id']))
           Property('Rate',      config['rate'])
