@@ -158,15 +158,27 @@ CloudFormation do
           Negated: predicate["negated"],
           Type: predicate["type"]
         }
-    end
+    end if config.has_key?("predicates")
 
     resource_name = "#{safe_name(name)}#{type}"
 
-    Resource(resource_name) do
-      Type("AWS::WAF#{type}::Rule")
-      Property("Name", FnSub("${EnvironmentName}-#{name}"))
-      Property("MetricName", FnJoin('', [safe_stack_name, safe_name(name)]))
-      Property("Predicates",  predicates) if !predicates.empty?
+
+    if config.has_key?("rate")
+      Resource(resource_name) do
+        Type("AWS::WAF#{type}::RateBasedRule")
+        Property("Name", FnSub("${EnvironmentName}-#{name}"))
+        Property("MetricName", FnJoin('', [safe_stack_name, safe_name(name)]))
+        Property("MatchPredicates",  predicates) if !predicates.empty?
+        Property("RateKey", "IP")
+        Property("RateLimit", config["rate"])
+      end
+    else 
+      Resource(resource_name) do
+        Type("AWS::WAF#{type}::Rule")
+        Property("Name", FnSub("${EnvironmentName}-#{name}"))
+        Property("MetricName", FnJoin('', [safe_stack_name, safe_name(name)]))
+        Property("Predicates",  predicates) if !predicates.empty?
+      end
     end
 
     Output(resource_name) do
@@ -175,6 +187,10 @@ CloudFormation do
     end
 
   end if defined? rules
+
+
+
+
 
   if defined? web_acl
     rules = []
