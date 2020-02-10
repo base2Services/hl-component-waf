@@ -1,0 +1,83 @@
+test_metadata:
+  type: config
+  name: ratebased 
+  description: Create a webacl with ratebased rules in cfn
+
+
+
+type: regional
+
+# Web ACL
+web_acl:
+  name: web-acl
+  metric_name: web-acl
+  default_action: ALLOW
+
+  rules:
+    server-side-includes-rule:
+      priority: 10
+      action: COUNT
+
+    rate-limit-rule:
+      priority: 11
+      action: COUNT
+
+# WAF rules
+rules:
+  server-side-includes-rule:
+    predicates:
+      -
+        condition_name: server-side-includes
+        negated: "false"
+        type: ByteMatch
+
+  rate-limit-rule:
+    rate: 100
+    predicates:
+      -
+        condition_name: server-side-includes
+        negated: "false"
+        type: ByteMatch
+
+
+
+# String match conditions
+byte_match_sets:
+  server-side-includes:
+    -
+      field_type: URI
+      positional_constraint: ENDS_WITH
+      target_string: .conf
+      text_transformation: LOWERCASE
+    -
+      field_type: URI
+      positional_constraint: ENDS_WITH
+      target_string: .ini
+      text_transformation: LOWERCASE
+    -
+      field_type: URI
+      positional_constraint: ENDS_WITH
+      target_string: .cfg
+      text_transformation: LOWERCASE
+    -
+      field_type: URI
+      positional_constraint: ENDS_WITH
+      target_string: .backup
+      text_transformation: LOWERCASE
+    -
+      field_type: URI
+      positional_constraint: ENDS_WITH
+      target_string: .log
+      text_transformation: LOWERCASE
+    -
+      field_type: URI
+      positional_constraint: ENDS_WITH
+      target_string: .bak
+      text_transformation: LOWERCASE
+    -
+      field_type: URI
+      positional_constraint: ENDS_WITH
+      target_string: .config
+      text_transformation: LOWERCASE
+
+
